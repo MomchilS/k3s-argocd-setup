@@ -1,8 +1,8 @@
 # K3s ArgoCD Setup
 
-Deploy a Streamlit JSON Updater app on a K3s cluster managed by ArgoCD.
+Deploy a Streamlit JSON Updater app on a K3s node managed by ArgoCD.
 
-## Repository Layout
+## Current Repository Layout
 
 ```text
 .
