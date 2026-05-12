@@ -11,6 +11,15 @@ terraform/*.tfstate
 terraform/*.tfstate.*
 terraform/terraform.tfvars
 terraform/*.auto.tfvars
+terraform/*.tfplan
+terraform/tfplan
+terraform/.terraform.tfstate.lock.info
+terraform/crash.log
+terraform/crash.*.log
+terraform/*_override.tf
+terraform/*_override.tf.json
+terraform/override.tf
+terraform/override.tf.json
 
 ansible/inventory.ini
 ansible/group_vars/all.yml
