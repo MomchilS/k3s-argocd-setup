@@ -6,10 +6,28 @@ Deploy a Streamlit JSON Updater app on a K3s node managed by ArgoCD.
 
 ```text
 .
+├── ansible/
+│   ├── ansible.cfg
+│   ├── inventory.ini.example
+│   ├── group_vars/
+│   │   └── all.yml.example
+│   ├── roles/
+│   │   ├── argocd/
+│   │   ├── common/
+│   │   ├── helm/
+│   │   └── k3s/
+│   └── site.yml
 ├── app/
 │   ├── requirements.txt
 │   ├── streamlit_app.py
 │   └── update_jsons.py
+├── terraform/
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── providers.tf
+│   ├── terraform.tfvars.example
+│   ├── variables.tf
+│   └── versions.tf
 ├── Dockerfile
 ├── README.md
 ├── .dockerignore
@@ -17,6 +35,8 @@ Deploy a Streamlit JSON Updater app on a K3s node managed by ArgoCD.
 ```
 
 The `Dockerfile` stays at the repository root. Application code lives under `app/`.
+
+Local files such as `terraform/terraform.tfvars`, Terraform state, Ansible inventory, and Ansible local group variables are ignored by Git.
 
 ## Build Order
 
@@ -49,11 +69,9 @@ Open:
 http://localhost:8501
 ```
 
-## Planned Directories
+## Remaining Planned Directory
 
 ```text
-terraform/   # VM provisioning
-ansible/     # K3s and host configuration
 kubernetes/  # ArgoCD applications and app manifests
 ```
 

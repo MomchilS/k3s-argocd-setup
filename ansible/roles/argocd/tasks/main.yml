@@ -1,0 +1,58 @@
+---
+- name: Create ArgoCD namespace
+  ansible.builtin.command: /usr/local/bin/kubectl create namespace "{{ argocd_namespace }}"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_remote_path }}"
+  register: argocd_namespace_create
+  changed_when: argocd_namespace_create.rc == 0
+  failed_when:
+    - argocd_namespace_create.rc != 0
+    - "'AlreadyExists' not in argocd_namespace_create.stderr"
+
+- name: Add ArgoCD Helm repository
+  ansible.builtin.command: >
+    /usr/local/bin/helm repo add "{{ argocd_helm_repo_name }}" "{{ argocd_helm_repo_url }}"
+    --force-update
+  environment:
+    KUBECONFIG: "{{ kubeconfig_remote_path }}"
+  register: argocd_helm_repo_add
+  changed_when: >
+    'has been added' in argocd_helm_repo_add.stdout
+    or 'has been updated' in argocd_helm_repo_add.stdout
+
+- name: Update Helm repositories
+  ansible.builtin.command: /usr/local/bin/helm repo update
+  environment:
+    KUBECONFIG: "{{ kubeconfig_remote_path }}"
+  changed_when: false
+
+- name: Install or upgrade ArgoCD Helm release
+  ansible.builtin.command: >
+    /usr/local/bin/helm upgrade --install "{{ argocd_release_name }}" "{{ argocd_chart_name }}"
+    --version "{{ argocd_chart_version }}"
+    --namespace "{{ argocd_namespace }}"
+    --create-namespace
+  environment:
+    KUBECONFIG: "{{ kubeconfig_remote_path }}"
+  register: argocd_helm_release
+  changed_when: >
+    'has been installed' in argocd_helm_release.stdout
+    or 'has been upgraded' in argocd_helm_release.stdout
+
+- name: Wait for ArgoCD server deployment
+  ansible.builtin.command: >
+    /usr/local/bin/kubectl rollout status deployment/argocd-server
+    -n "{{ argocd_namespace }}"
+    --timeout=300s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_remote_path }}"
+  changed_when: false
+
+- name: Wait for ArgoCD application controller statefulset
+  ansible.builtin.command: >
+    /usr/local/bin/kubectl rollout status statefulset/argocd-application-controller
+    -n "{{ argocd_namespace }}"
+    --timeout=300s
+  environment:
+    KUBECONFIG: "{{ kubeconfig_remote_path }}"
+  changed_when: false
